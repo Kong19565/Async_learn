@@ -1,0 +1,736 @@
+========================================================================
+WEEK 2: ASYNCHRONOUS PROGRAMMING CODE AND OUTPUT SUMMARY
+========================================================================
+
+------------------------------------------------------------------------
+FILE: asyncio01.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 1: The First Coroutine Function
+# Concept: Understanding async def and how it differs from a normal function.
+import inspect
+from time import ctime
+
+def cook_spaghetti(customer):
+    return f"Spaghetti for {customer}"
+
+async def serve_customer(customer):
+    return f"Served customer {customer}"
+
+if __name__ == "__main__":
+    print(f"{ctime()} -> type(cook_spaghetti): {type(cook_spaghetti)}")
+    print(f"{ctime()} -> type(serve_customer): {type(serve_customer)}")
+    
+    print(f"{ctime()} -> inspect.iscoroutinefunction(cook_spaghetti): {inspect.iscoroutinefunction(cook_spaghetti)}")
+    print(f"{ctime()} -> inspect.iscoroutinefunction(serve_customer): {inspect.iscoroutinefunction(serve_customer)}")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:22 2026 -> type(cook_spaghetti): <class 'function'>
+Wed Jul  1 11:27:22 2026 -> type(serve_customer): <class 'function'>
+Wed Jul  1 11:27:22 2026 -> inspect.iscoroutinefunction(cook_spaghetti): False
+Wed Jul  1 11:27:22 2026 -> inspect.iscoroutinefunction(serve_customer): True
+
+
+------------------------------------------------------------------------
+FILE: asyncio02.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 2: Coroutine Object
+# Concept: Calling an async def function returns a coroutine object, it doesn't run the function yet.
+import asyncio
+import inspect
+from time import ctime
+
+async def serve_customer(name):
+    print(f"{ctime()} -> Cooking for {name}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Served {name}!")
+
+if __name__ == "__main__":
+    print(f"{ctime()} -> Calling serve_customer('A')...")
+    coro = serve_customer("A")
+    print(f"{ctime()} -> Coroutine object created: {coro}")
+    print(f"{ctime()} -> Note that 'Cooking for A...' was not printed yet because it has not run.")
+    
+    print(f"{ctime()} -> type(coro): {type(coro)}")
+    print(f"{ctime()} -> inspect.iscoroutine(coro): {inspect.iscoroutine(coro)}")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:22 2026 -> Calling serve_customer('A')...
+Wed Jul  1 11:27:22 2026 -> Coroutine object created: <coroutine object serve_customer at 0x00000294FC1C5B60>
+Wed Jul  1 11:27:22 2026 -> Note that 'Cooking for A...' was not printed yet because it has not run.
+Wed Jul  1 11:27:22 2026 -> type(coro): <class 'coroutine'>
+Wed Jul  1 11:27:22 2026 -> inspect.iscoroutine(coro): True
+[STDERR]
+<sys>:0: RuntimeWarning: coroutine 'serve_customer' was never awaited
+
+
+------------------------------------------------------------------------
+FILE: asyncio03.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 3: Event Loop (asyncio.run)
+# Concept: Using the event loop to execute a coroutine object to completion.
+import asyncio
+from time import time, ctime
+
+async def serve_customer(name):
+    print(f"{ctime()} -> Cooking for {name}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Served {name}!")
+    return f"Spaghetti for {name}"
+
+if __name__ == "__main__":
+    start_time = time()
+    print(f"{ctime()} -> Creating coroutine object...")
+    coro = serve_customer("A")
+    
+    print(f"{ctime()} -> Running the coroutine object using asyncio.run()...")
+    result = asyncio.run(coro)
+    print(f"{ctime()} -> Coroutine finished. Returned value: {result}")
+    print(f"Total Operation Time: {time() - start_time:.2f} seconds")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:22 2026 -> Creating coroutine object...
+Wed Jul  1 11:27:22 2026 -> Running the coroutine object using asyncio.run()...
+Wed Jul  1 11:27:22 2026 -> Cooking for A...
+Wed Jul  1 11:27:23 2026 -> Served A!
+Wed Jul  1 11:27:23 2026 -> Coroutine finished. Returned value: Spaghetti for A
+Total Operation Time: 1.02 seconds
+
+
+------------------------------------------------------------------------
+FILE: asyncio04.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 4: The await keyword
+# Concept: Pausing execution of a coroutine to let other tasks run, using await.
+import asyncio
+from time import time, ctime
+
+async def serve_customer(name):
+    print(f"{ctime()} -> Cooking for {name}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Served {name}!")
+
+async def main():
+    start_time = time()
+    print(f"{ctime()} -> Main: Starting to serve Customer A")
+    await serve_customer("A")
+    print(f"Total Operation Time: {time() - start_time:.2f} seconds")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:23 2026 -> Main: Starting to serve Customer A
+Wed Jul  1 11:27:23 2026 -> Cooking for A...
+Wed Jul  1 11:27:24 2026 -> Served A!
+Total Operation Time: 1.01 seconds
+
+
+------------------------------------------------------------------------
+FILE: asyncio05.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 5: Sequential Execution (The Wrong Way)
+# Concept: Awaiting coroutines sequentially is still synchronous.
+import asyncio
+from time import time, ctime
+
+async def serve_customer(name):
+    print(f"{ctime()} -> Cooking for {name}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Served {name}!")
+
+async def main():
+    start = time()
+    await serve_customer("A")
+    await serve_customer("B")
+    
+    print(f"Total Time: {time() - start:.2f} seconds")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:25 2026 -> Cooking for A...
+Wed Jul  1 11:27:26 2026 -> Served A!
+Wed Jul  1 11:27:26 2026 -> Cooking for B...
+Wed Jul  1 11:27:27 2026 -> Served B!
+Total Time: 2.02 seconds
+
+
+------------------------------------------------------------------------
+FILE: asyncio06.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 6: Concurrent Task
+# Concept: Wrapping a coroutine in asyncio.create_task() registers it on the event loop to run concurrently.
+import asyncio
+from time import time, ctime
+
+async def cook_spaghetti(customer):
+    print(f"{ctime()} -> Starting cooking for Customer {customer}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Finished cooking for Customer {customer}!")
+
+async def main():
+    start_time = time()
+    task_a = asyncio.create_task(cook_spaghetti("A"))
+    print(f"{ctime()} -> Main program can do other things while Task A runs in background.")
+    await task_a
+    print(f"Total Operation Time: {time() - start_time:.2f} seconds")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:27 2026 -> Main program can do other things while Task A runs in background.
+Wed Jul  1 11:27:27 2026 -> Starting cooking for Customer A...
+Wed Jul  1 11:27:28 2026 -> Finished cooking for Customer A!
+Total Operation Time: 1.00 seconds
+
+
+------------------------------------------------------------------------
+FILE: asyncio07.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 7: Concurrent Tasks (Dual Tasks)
+# Concept: Scheduling multiple concurrent tasks and awaiting them.
+import asyncio
+from time import time, ctime
+
+async def cook_spaghetti(customer):
+    print(f"{ctime()} -> Starting cooking for Customer {customer}...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Finished cooking for Customer {customer}!")
+
+async def main():
+    start_time = time()
+    task_a = asyncio.create_task(cook_spaghetti("A"))
+    task_b = asyncio.create_task(cook_spaghetti("B"))
+    
+    await task_a
+    await task_b
+    print(f"Total Operation Time: {time() - start_time:.2f} seconds")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:28 2026 -> Starting cooking for Customer A...
+Wed Jul  1 11:27:28 2026 -> Starting cooking for Customer B...
+Wed Jul  1 11:27:29 2026 -> Finished cooking for Customer A!
+Wed Jul  1 11:27:29 2026 -> Finished cooking for Customer B!
+Total Operation Time: 1.00 seconds
+
+
+------------------------------------------------------------------------
+FILE: asyncio08.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 8: Interleaving Tasks (Context Switching)
+# Concept: Demonstrating how single-threaded event loop switches execution context between tasks.
+import asyncio
+from time import ctime
+
+async def kitchen_crew():
+    print(f"{ctime()} -> [Chef] puts noodle in boiling water...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> [Chef] strains the noodle!")
+
+async def bar_crew():
+    print(f"{ctime()} -> [Bar] starts grinding coffee bean...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> [Bar] pours espresso shot!")
+
+async def main():
+    task_kitchen = asyncio.create_task(kitchen_crew())
+    task_bar = asyncio.create_task(bar_crew())
+    
+    await task_kitchen
+    await task_bar
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:29 2026 -> [Chef] puts noodle in boiling water...
+Wed Jul  1 11:27:29 2026 -> [Bar] starts grinding coffee bean...
+Wed Jul  1 11:27:30 2026 -> [Chef] strains the noodle!
+Wed Jul  1 11:27:30 2026 -> [Bar] pours espresso shot!
+
+
+------------------------------------------------------------------------
+FILE: asyncio09.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 9: Dynamic Task List
+# Concept: Managing multiple tasks in a list and awaiting them.
+import asyncio
+from time import time, ctime
+
+async def serve_customer(name):
+    print(f"{ctime()} -> Handling customer {name}")
+    await asyncio.sleep(1)
+    print(f"{ctime()} -> Done customer {name}")
+
+async def main():
+    start_time = time()
+    customers = ["A", "B", "C", "D"]
+    task_list = []
+    
+    for name in customers:
+        t = asyncio.create_task(serve_customer(name))
+        task_list.append(t)
+        
+    for t in task_list:
+        await t
+        
+    print(f"Served all {len(customers)} customers in {time() - start_time:.2f} seconds.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:30 2026 -> Handling customer A
+Wed Jul  1 11:27:30 2026 -> Handling customer B
+Wed Jul  1 11:27:30 2026 -> Handling customer C
+Wed Jul  1 11:27:30 2026 -> Handling customer D
+Wed Jul  1 11:27:31 2026 -> Done customer A
+Wed Jul  1 11:27:31 2026 -> Done customer B
+Wed Jul  1 11:27:31 2026 -> Done customer C
+Wed Jul  1 11:27:31 2026 -> Done customer D
+Served all 4 customers in 1.01 seconds.
+
+
+------------------------------------------------------------------------
+FILE: asyncio10.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+# Program 10: Retreiving Task Return Value
+# Concept: Accessing the return value of completed tasks.
+import asyncio
+
+async def calculate_bill(customer, base_price):
+    print(f"Calculating receipt for Customer {customer}...")
+    await asyncio.sleep(1)
+    final_price = base_price * 1.07
+    return final_price
+
+async def main():
+    task_a = asyncio.create_task(calculate_bill("A", 100))
+    task_b = asyncio.create_task(calculate_bill("B", 200))
+    
+    result_a = await task_a
+    result_b = await task_b
+    
+    # result_b = task_b.result()
+    
+    print(f"\nFinal Bill A: {result_a:.2f}")
+    print(f"Final Bill B: {result_b:.2f}")
+    print(f"Combined Total Revenue: {result_a + result_b:.2f}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Calculating receipt for Customer A...
+Calculating receipt for Customer B...
+
+Final Bill A: 107.00
+Final Bill B: 214.00
+Combined Total Revenue: 321.00
+
+
+------------------------------------------------------------------------
+FILE: restaurant_01_simple.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+from time import sleep, ctime, time
+
+# Greeting synchronous
+def greet_diners(customer):
+    print(f"{ctime()} Greeting for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Greeting for Customer-{customer} ...Done!")
+
+# Take Order
+def take_orders(customer):
+    print(f"{ctime()} Taking Order for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Taking Order for Customer-{customer} ...Done!")
+
+# Do Cooking
+def do_cooking(customer):
+    print(f"{ctime()} Cooking for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Cooking for Customer-{customer} ...Done!")
+
+# Do Cooking
+def mini_bar(customer):
+    print(f"{ctime()} Mini Bar for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Mini Bar for Customer-{customer} ...Done!")
+
+if __name__ == "__main__":
+    # Begin of main thread
+    customers = ['A', 'B', 'C']
+
+    start_time = time()
+    # Cooking for each customer
+    for customer in customers:
+        greet_diners(customer)
+        take_orders(customer)
+        do_cooking(customer)
+        mini_bar(customer)
+
+    duration = time() - start_time
+    print(f"{ctime()} Finished Cooking in {duration:0.2f} seconds.")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:32 2026 Greeting for Customer-A ...
+Wed Jul  1 11:27:33 2026 Greeting for Customer-A ...Done!
+Wed Jul  1 11:27:33 2026 Taking Order for Customer-A ...
+Wed Jul  1 11:27:34 2026 Taking Order for Customer-A ...Done!
+Wed Jul  1 11:27:34 2026 Cooking for Customer-A ...
+Wed Jul  1 11:27:35 2026 Cooking for Customer-A ...Done!
+Wed Jul  1 11:27:35 2026 Mini Bar for Customer-A ...
+Wed Jul  1 11:27:36 2026 Mini Bar for Customer-A ...Done!
+Wed Jul  1 11:27:36 2026 Greeting for Customer-B ...
+Wed Jul  1 11:27:37 2026 Greeting for Customer-B ...Done!
+Wed Jul  1 11:27:37 2026 Taking Order for Customer-B ...
+Wed Jul  1 11:27:38 2026 Taking Order for Customer-B ...Done!
+Wed Jul  1 11:27:38 2026 Cooking for Customer-B ...
+Wed Jul  1 11:27:39 2026 Cooking for Customer-B ...Done!
+Wed Jul  1 11:27:39 2026 Mini Bar for Customer-B ...
+Wed Jul  1 11:27:40 2026 Mini Bar for Customer-B ...Done!
+Wed Jul  1 11:27:40 2026 Greeting for Customer-C ...
+Wed Jul  1 11:27:41 2026 Greeting for Customer-C ...Done!
+Wed Jul  1 11:27:41 2026 Taking Order for Customer-C ...
+Wed Jul  1 11:27:42 2026 Taking Order for Customer-C ...Done!
+Wed Jul  1 11:27:42 2026 Cooking for Customer-C ...
+Wed Jul  1 11:27:43 2026 Cooking for Customer-C ...Done!
+Wed Jul  1 11:27:43 2026 Mini Bar for Customer-C ...
+Wed Jul  1 11:27:44 2026 Mini Bar for Customer-C ...Done!
+Wed Jul  1 11:27:44 2026 Finished Cooking in 12.00 seconds.
+
+
+------------------------------------------------------------------------
+FILE: restaurant_01_thread.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+import threading
+from time import sleep, ctime, time
+
+# 1. ขั้นตอนต้อนรับหน้าร้าน ทำแบบ Synchronous เรียงทีละคน
+def greet_diners(customer):
+    print(f"{ctime()} Greeting for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Greeting for Customer-{customer} ...Done!")
+
+# 2. กระบวนการส่วนตัวของลูกค้าแต่ละคน ที่จะถูกนำไปรันแยกในเธรดของตัวเอง
+def customer_private_workflow(customer):
+    # Take Order
+    print(f"{ctime()}  [Thread-{customer}] Taking Order ...")
+    sleep(1)
+    print(f"{ctime()}  [Thread-{customer}] Taking Order ...Done!")
+
+    # Do Cooking
+    print(f"{ctime()}  [Thread-{customer}] Cooking Spaghetti ...")
+    sleep(1)
+    print(f"{ctime()}  [Thread-{customer}] Cooking Spaghetti ...Done!")
+
+    # Manage Bar
+    print(f"{ctime()}  [Thread-{customer}] Manage Bar for Drink ...")
+    sleep(1)
+    print(f"{ctime()}  [Thread-{customer}] Manage Bar for Drink ...Done!")
+    print(f"{ctime()}  [Thread-{customer}] All served!\n")
+
+if __name__ == "__main__":
+    customers = ['A', 'B', 'C']
+    start_time = time()
+
+    # ----------------------------------------------------
+    # PHASE 1: Greet diners sequentially
+    # ----------------------------------------------------
+    for customer in customers:
+        greet_diners(customer)
+
+    print(f"\n{ctime()} --- All customers greeted. Scheduling independent Threads! ---\n")
+
+    # ----------------------------------------------------
+    # PHASE 2: Spawn threads for concurrent phases
+    # ----------------------------------------------------
+    customer_threads = []
+    for customer in customers:
+        # สร้างเธรดแยกให้ลูกค้าแต่ละคน
+        t = threading.Thread(target=customer_private_workflow, args=(customer,))
+        customer_threads.append(t)
+        t.start()
+
+    # รอให้ลูกค้าทุกคนทำขั้นตอนทั้งหมดเสร็จสิ้น
+    for t in customer_threads:
+        t.join()
+
+    duration = time() - start_time
+    print(f"{ctime()} Finished Cooking in {duration:0.2f} seconds.")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:44 2026 Greeting for Customer-A ...
+Wed Jul  1 11:27:45 2026 Greeting for Customer-A ...Done!
+Wed Jul  1 11:27:45 2026 Greeting for Customer-B ...
+Wed Jul  1 11:27:46 2026 Greeting for Customer-B ...Done!
+Wed Jul  1 11:27:46 2026 Greeting for Customer-C ...
+Wed Jul  1 11:27:47 2026 Greeting for Customer-C ...Done!
+
+Wed Jul  1 11:27:47 2026 --- All customers greeted. Scheduling independent Threads! ---
+
+Wed Jul  1 11:27:47 2026  [Thread-A] Taking Order ...
+Wed Jul  1 11:27:47 2026  [Thread-B] Taking Order ...
+Wed Jul  1 11:27:47 2026  [Thread-C] Taking Order ...
+Wed Jul  1 11:27:48 2026  [Thread-B] Taking Order ...Done!
+Wed Jul  1 11:27:48 2026  [Thread-B] Cooking Spaghetti ...
+Wed Jul  1 11:27:48 2026  [Thread-A] Taking Order ...Done!
+Wed Jul  1 11:27:48 2026  [Thread-A] Cooking Spaghetti ...
+Wed Jul  1 11:27:48 2026  [Thread-C] Taking Order ...Done!
+Wed Jul  1 11:27:48 2026  [Thread-C] Cooking Spaghetti ...
+Wed Jul  1 11:27:49 2026  [Thread-A] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:49 2026  [Thread-A] Manage Bar for Drink ...
+Wed Jul  1 11:27:49 2026  [Thread-B] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:49 2026  [Thread-B] Manage Bar for Drink ...
+Wed Jul  1 11:27:49 2026  [Thread-C] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:49 2026  [Thread-C] Manage Bar for Drink ...
+Wed Jul  1 11:27:50 2026  [Thread-B] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:50 2026  [Thread-B] All served!
+
+Wed Jul  1 11:27:50 2026  [Thread-C] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:50 2026  [Thread-C] All served!
+
+Wed Jul  1 11:27:50 2026  [Thread-A] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:50 2026  [Thread-A] All served!
+
+Wed Jul  1 11:27:50 2026 Finished Cooking in 6.00 seconds.
+
+
+------------------------------------------------------------------------
+FILE: restaurant_01_multiprocess.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+import multiprocessing
+from time import sleep, ctime, time
+
+# 1. ขั้นตอนต้อนรับหน้าร้าน ทำแบบ Synchronous เรียงทีละคน
+def greet_diners(customer):
+    print(f"{ctime()} Greeting for Customer-{customer} ...")
+    sleep(1)
+    print(f"{ctime()} Greeting for Customer-{customer} ...Done!")
+
+# 2. กระบวนการย่อยของลูกค้าแต่ละคน ที่รอบนี้จะถูกนำไปรันแยกในโปรเซสของตัวเอง
+def customer_private_workflow(customer):
+    # ในแต่ละ Process จะทำงาน 3 Tasks นี้
+    pid = multiprocessing.current_process().pid
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Taking Order ...")
+    sleep(1)
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Taking Order ...Done!")
+
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Cooking Spaghetti ...")
+    sleep(1)
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Cooking Spaghetti ...Done!")
+
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Manage Bar for Drink ...")
+    sleep(1)
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] Manage Bar for Drink ...Done!")
+    print(f"{ctime()}  [Process-{customer} (PID: {pid})] All served!\n")
+
+if __name__ == "__main__":
+    customers = ['A', 'B', 'C']
+    start_time = time()
+
+    # ----------------------------------------------------
+    # PHASE 1: Greet ลูกค้าทีละคนแบบ Synchronous ใน Main Process
+    # ----------------------------------------------------
+    for customer in customers:
+        greet_diners(customer)
+
+    print(f"\n{ctime()} --- All customers greeted. FORKING into independent Processes (Branch)! ---\n")
+
+    # ----------------------------------------------------
+    # PHASE 2: แตกโปรเซส (เปิดสาขาใหม่แยกขาดจากกันตามคอร์ซีพียู)
+    # ----------------------------------------------------
+    processes = []
+    for customer in customers:
+        # เปลี่ยนจาก threading.Thread เป็น multiprocessing.Process
+        p = multiprocessing.Process(target=customer_private_workflow, args=(customer,))
+        processes.append(p)
+        p.start() # OS จะทำการโคลนทุกอย่างแล้วเตะไปรันบน CPU คอร์อื่น ๆ ขนานกันทันที
+
+    # รอให้ทุกโปรเซส (ทุกสาขา) ทำงานของตัวเองเสร็จสิ้นทั้งหมด
+    for p in processes:
+        p.join()
+
+    duration = time() - start_time
+    print(f"{ctime()} Finished Entire Restaurant Operation in {duration:0.2f} seconds.")
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:54 2026  [Process-A (PID: 11888)] Taking Order ...
+Wed Jul  1 11:27:55 2026  [Process-A (PID: 11888)] Taking Order ...Done!
+Wed Jul  1 11:27:55 2026  [Process-A (PID: 11888)] Cooking Spaghetti ...
+Wed Jul  1 11:27:56 2026  [Process-A (PID: 11888)] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:56 2026  [Process-A (PID: 11888)] Manage Bar for Drink ...
+Wed Jul  1 11:27:57 2026  [Process-A (PID: 11888)] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:57 2026  [Process-A (PID: 11888)] All served!
+
+Wed Jul  1 11:27:54 2026  [Process-B (PID: 580)] Taking Order ...
+Wed Jul  1 11:27:55 2026  [Process-B (PID: 580)] Taking Order ...Done!
+Wed Jul  1 11:27:55 2026  [Process-B (PID: 580)] Cooking Spaghetti ...
+Wed Jul  1 11:27:56 2026  [Process-B (PID: 580)] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:56 2026  [Process-B (PID: 580)] Manage Bar for Drink ...
+Wed Jul  1 11:27:57 2026  [Process-B (PID: 580)] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:57 2026  [Process-B (PID: 580)] All served!
+
+Wed Jul  1 11:27:54 2026  [Process-C (PID: 25588)] Taking Order ...
+Wed Jul  1 11:27:55 2026  [Process-C (PID: 25588)] Taking Order ...Done!
+Wed Jul  1 11:27:55 2026  [Process-C (PID: 25588)] Cooking Spaghetti ...
+Wed Jul  1 11:27:56 2026  [Process-C (PID: 25588)] Cooking Spaghetti ...Done!
+Wed Jul  1 11:27:56 2026  [Process-C (PID: 25588)] Manage Bar for Drink ...
+Wed Jul  1 11:27:57 2026  [Process-C (PID: 25588)] Manage Bar for Drink ...Done!
+Wed Jul  1 11:27:57 2026  [Process-C (PID: 25588)] All served!
+
+Wed Jul  1 11:27:51 2026 Greeting for Customer-A ...
+Wed Jul  1 11:27:52 2026 Greeting for Customer-A ...Done!
+Wed Jul  1 11:27:52 2026 Greeting for Customer-B ...
+Wed Jul  1 11:27:53 2026 Greeting for Customer-B ...Done!
+Wed Jul  1 11:27:53 2026 Greeting for Customer-C ...
+Wed Jul  1 11:27:54 2026 Greeting for Customer-C ...Done!
+
+Wed Jul  1 11:27:54 2026 --- All customers greeted. FORKING into independent Processes (Branch)! ---
+
+Wed Jul  1 11:27:57 2026 Finished Entire Restaurant Operation in 6.10 seconds.
+
+
+------------------------------------------------------------------------
+FILE: restaurant_01_asyncio.py
+------------------------------------------------------------------------
+
+### SOURCE CODE ###
+import asyncio
+from time import time, ctime
+
+# 1. ขั้นตอนต้อนรับหน้าร้าน ทำแบบ Synchronous เรียงทีละคน
+async def greet_diners(customer):
+    print(f"{ctime()} Greeting for Customer-{customer} ...")
+    await asyncio.sleep(1)
+    print(f"{ctime()} Greeting for Customer-{customer} ...Done!")
+
+# 2. กระบวนการส่วนตัวของลูกค้าแต่ละคน ที่จะถูกนำไปรันแยกใน Task ของตัวเอง
+async def customer_private_workflow(customer):
+    # Take Order
+    print(f"{ctime()}  [Task-{customer}] Taking Order ...")
+    await asyncio.sleep(1)
+    print(f"{ctime()}  [Task-{customer}] Taking Order ...Done!")
+
+    # Do Cooking
+    print(f"{ctime()}  [Task-{customer}] Cooking Spaghetti ...")
+    await asyncio.sleep(1)
+    print(f"{ctime()}  [Task-{customer}] Cooking Spaghetti ...Done!")
+
+    # Manage Bar
+    print(f"{ctime()}  [Task-{customer}] Manage Bar for Drink ...")
+    await asyncio.sleep(1)
+    print(f"{ctime()}  [Task-{customer}] Manage Bar for Drink ...Done!")
+    print(f"{ctime()}  [Task-{customer}] All served!\n")
+
+async def main():
+    start_time = time()
+    customers = ['A', 'B', 'C']
+
+    # ----------------------------------------------------
+    # PHASE 1: Greet diners sequentially
+    # ----------------------------------------------------
+    for customer in customers:
+        await greet_diners(customer)
+
+    print(f"\n{ctime()} --- All customers greeted. Scheduling independent Async Tasks! ---\n")
+
+    # ----------------------------------------------------
+    # PHASE 2: Spawn tasks for concurrent phases
+    # ----------------------------------------------------
+    tasks = []
+    for customer in customers:
+        task = asyncio.create_task(customer_private_workflow(customer))
+        tasks.append(task)
+
+    await asyncio.gather(*tasks)
+
+    duration = time() - start_time
+    print(f"{ctime()} Finished Cooking in {duration:0.2f} seconds.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+### EXECUTION OUTPUT ###
+Wed Jul  1 11:27:57 2026 Greeting for Customer-A ...
+Wed Jul  1 11:27:58 2026 Greeting for Customer-A ...Done!
+Wed Jul  1 11:27:58 2026 Greeting for Customer-B ...
+Wed Jul  1 11:27:59 2026 Greeting for Customer-B ...Done!
+Wed Jul  1 11:27:59 2026 Greeting for Customer-C ...
+Wed Jul  1 11:28:00 2026 Greeting for Customer-C ...Done!
+
+Wed Jul  1 11:28:00 2026 --- All customers greeted. Scheduling independent Async Tasks! ---
+
+Wed Jul  1 11:28:00 2026  [Task-A] Taking Order ...
+Wed Jul  1 11:28:00 2026  [Task-B] Taking Order ...
+Wed Jul  1 11:28:00 2026  [Task-C] Taking Order ...
+Wed Jul  1 11:28:01 2026  [Task-A] Taking Order ...Done!
+Wed Jul  1 11:28:01 2026  [Task-A] Cooking Spaghetti ...
+Wed Jul  1 11:28:01 2026  [Task-B] Taking Order ...Done!
+Wed Jul  1 11:28:01 2026  [Task-B] Cooking Spaghetti ...
+Wed Jul  1 11:28:01 2026  [Task-C] Taking Order ...Done!
+Wed Jul  1 11:28:01 2026  [Task-C] Cooking Spaghetti ...
+Wed Jul  1 11:28:02 2026  [Task-A] Cooking Spaghetti ...Done!
+Wed Jul  1 11:28:02 2026  [Task-A] Manage Bar for Drink ...
+Wed Jul  1 11:28:02 2026  [Task-B] Cooking Spaghetti ...Done!
+Wed Jul  1 11:28:02 2026  [Task-B] Manage Bar for Drink ...
+Wed Jul  1 11:28:02 2026  [Task-C] Cooking Spaghetti ...Done!
+Wed Jul  1 11:28:02 2026  [Task-C] Manage Bar for Drink ...
+Wed Jul  1 11:28:03 2026  [Task-A] Manage Bar for Drink ...Done!
+Wed Jul  1 11:28:03 2026  [Task-A] All served!
+
+Wed Jul  1 11:28:03 2026  [Task-B] Manage Bar for Drink ...Done!
+Wed Jul  1 11:28:03 2026  [Task-B] All served!
+
+Wed Jul  1 11:28:03 2026  [Task-C] Manage Bar for Drink ...Done!
+Wed Jul  1 11:28:03 2026  [Task-C] All served!
+
+Wed Jul  1 11:28:03 2026 Finished Cooking in 6.07 seconds.
+
+

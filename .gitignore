@@ -1,0 +1,26 @@
+# Dependencies
+/async-2026/.venv/
+/dashboard/node_modules/
+
+# Next.js build output
+/dashboard/.next/
+/dashboard/out/
+/dashboard/build/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
