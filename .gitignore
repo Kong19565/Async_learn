@@ -1,5 +1,5 @@
 # Dependencies
-/async-2026/.venv/
+/async-2026/
 /dashboard/node_modules/
 
 # Next.js build output
