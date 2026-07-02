@@ -1,11 +1,11 @@
 # Dependencies
 /async-2026/
-/node_modules/
+/web/node_modules/
 
 # Next.js build output
-/.next/
-/out/
-/build/
+/web/.next/
+/web/out/
+/web/build/
 
 # Python cache
 __pycache__/
