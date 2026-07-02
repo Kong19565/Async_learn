@@ -128,7 +128,7 @@ export default function Quizzes() {
       <main className="max-w-4xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
         
         {/* Intro */}
-        <section className="p-6 rounded-2xl border border-zinc-850 bg-zinc-900/10 flex items-center justify-between gap-6">
+        <section className="p-6 rounded-2xl border border-zinc-850 bg-zinc-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
               <BookOpen className="text-emerald-500" size={20} />
@@ -163,7 +163,7 @@ export default function Quizzes() {
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 pl-9">
+                <div className="grid grid-cols-1 gap-3 pl-0 sm:pl-9">
                   {q.options.map((opt, oIdx) => {
                     const isOptSelected = selectedAnswers[q.id] === oIdx;
                     const showCorrectMarker = submitted && oIdx === q.answerIndex;
@@ -199,7 +199,7 @@ export default function Quizzes() {
 
                 {/* Explanation */}
                 {submitted && (
-                  <div className={`mt-4 p-4 rounded-xl border pl-9 text-xs leading-relaxed ${
+                  <div className={`mt-4 p-4 rounded-xl border pl-4 sm:pl-9 text-xs leading-relaxed ${
                     isCorrect 
                       ? "bg-emerald-950/10 border-emerald-500/10 text-zinc-300"
                       : "bg-zinc-900/30 border-zinc-800 text-zinc-400"

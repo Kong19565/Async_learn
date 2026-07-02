@@ -324,7 +324,7 @@ export default function Week2() {
     <div className="flex flex-col min-h-screen bg-zinc-950 text-zinc-100 selection:bg-purple-500 selection:text-black">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-0 sm:h-16 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
           <div className="flex items-center gap-3">
             <Link href="/" className="text-zinc-400 hover:text-white transition-colors">
               <ArrowLeft size={20} />
@@ -453,7 +453,7 @@ export default function Week2() {
                 {/* 1. Restaurant simulation */}
                 {isRestaurant ? (
                   <div className="w-full space-y-6">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {restaurantClients.map((client, idx) => (
                         <div key={idx} className="bg-zinc-900/50 border border-zinc-850 p-4 rounded-xl flex flex-col items-center gap-3 relative">
                           

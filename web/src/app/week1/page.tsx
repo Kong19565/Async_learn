@@ -330,7 +330,7 @@ export default function Week1() {
     <div className="flex flex-col min-h-screen bg-zinc-950 text-zinc-100 selection:bg-cyan-500 selection:text-black">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-0 sm:h-16 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
           <div className="flex items-center gap-3">
             <Link href="/" className="text-zinc-400 hover:text-white transition-colors">
               <ArrowLeft size={20} />
@@ -541,7 +541,7 @@ export default function Week1() {
                     <h3 className="text-xs font-bold font-mono text-zinc-500 border-b border-zinc-900 pb-2">
                       ACTIVE PID/TID REGISTRATION TABLE
                     </h3>
-                    <div className="overflow-y-auto max-h-[160px] font-mono text-xs">
+                    <div className="overflow-auto max-h-[160px] font-mono text-xs">
                       <table className="w-full text-left text-zinc-400">
                         <thead>
                           <tr className="text-[10px] text-zinc-600 uppercase border-b border-zinc-900">
@@ -577,7 +577,7 @@ export default function Week1() {
                 {/* 3. PS Resource Metrics Chart */}
                 {scenario === "ps" && (
                   <div className="w-full flex flex-col gap-6">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="p-3 bg-zinc-900/40 border border-zinc-900 rounded-xl text-center">
                         <span className="text-[9px] font-mono text-zinc-500 uppercase flex items-center justify-center gap-1">
                           <Clock size={10} className="text-cyan-400" />

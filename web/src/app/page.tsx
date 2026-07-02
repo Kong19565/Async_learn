@@ -56,7 +56,7 @@ export default function Home() {
 
       {/* Modules Selection Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
           {/* Week 1 Module Card */}
           <div className="group relative flex flex-col justify-between p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm hover:border-cyan-500/40 hover:bg-zinc-900/50 transition-all duration-300">
@@ -196,7 +196,7 @@ export default function Home() {
         </div>
 
         {/* Quick Concept Explainer */}
-        <div className="mt-16 p-8 rounded-2xl border border-zinc-800 bg-zinc-900/10">
+        <div className="mt-16 p-4 sm:p-6 md:p-8 rounded-2xl border border-zinc-800 bg-zinc-900/10">
           <h4 className="text-lg font-bold text-zinc-200 mb-6 flex items-center gap-2">
             <BookOpen size={18} className="text-cyan-500" />
             ตารางเปรียบเทียบการทำงานของ Concurrency แต่ละประเภท
