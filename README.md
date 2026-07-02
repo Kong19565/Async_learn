@@ -33,9 +33,8 @@ cd Async_learn
 ```
 
 ### 2. รันแอปพลิเคชัน Next.js (Dashboard)
-ย้ายเข้าโฟลเดอร์ `dashboard` เพื่อติดตั้ง Node packages และเปิดเซิร์ฟเวอร์นักพัฒนา
+ติดตั้ง Node packages และเปิดเซิร์ฟเวอร์นักพัฒนาที่โฟลเดอร์หลักได้ทันที
 ```bash
-cd dashboard
 npm install
 npm run dev
 ```
@@ -51,13 +50,12 @@ npm run dev
 ## 📁 โครงสร้างโปรเจกต์ (Project Directory)
 
 ```text
-├── dashboard/                 # Next.js App Router (TypeScript & Tailwind v4)
-│   ├── src/app/
-│   │   ├── api/run/route.ts   # Backend API สำหรับรันสคริปต์และสตรีม log (NDJSON)
-│   │   ├── week1/page.tsx     # ตัวจำลองแล็บ Week 1 (Coffee, PID, PS, UP)
-│   │   ├── week2/page.tsx     # ตัวจำลองแล็บ Week 2 (asyncio01-10 + Restaurant)
-│   │   ├── quizzes/page.tsx   # แบบทดสอบความรู้
-│   │   └── page.tsx           # หน้าหลักพอร์ทัล
+├── src/app/                   # Next.js App Router (TypeScript & Tailwind v4)
+│   ├── api/run/route.ts       # Backend API สำหรับรันสคริปต์และสตรีม log (NDJSON)
+│   ├── week1/page.tsx         # ตัวจำลองแล็บ Week 1 (Coffee, PID, PS, UP)
+│   ├── week2/page.tsx         # ตัวจำลองแล็บ Week 2 (asyncio01-10 + Restaurant)
+│   ├── quizzes/page.tsx       # แบบทดสอบความรู้
+│   └── page.tsx               # หน้าหลักพอร์ทัล
 ├── Doc/                       # เอกสารประกอบการสอนวิชา Asynchronous (.pdf, .txt)
 └── .gitignore                 # กำหนดค่าข้ามโฟลเดอร์ขนาดใหญ่ (node_modules, async-2026)
 ```
